@@ -4,6 +4,7 @@ import { useRouter,useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { AlertTriangle, Home } from "lucide-react";
 import Link from "next/link";
+import { Suspense } from "react";
 
 export default function ErrorPage() {
   const router = useRouter();
@@ -15,6 +16,8 @@ export default function ErrorPage() {
   };
 
   return (
+    
+     <Suspense fallback={<div>Chargement...</div>}>
     <div className="w-screen h-screen flex flex-col items-center justify-center gap-6 bg-background">
       <AlertTriangle className="w-16 h-16 text-destructive animate-ping" />
       <h1 className="text-3xl font-bold text-destructive">Oups !</h1>
@@ -24,5 +27,6 @@ export default function ErrorPage() {
       </Button>
       <Link href={'/'} className="bg-primary p-4 rounded-full mt-10 hover:animate-pulse hover:bg-secondary " ><Home size={40} /></Link>
     </div>
+    </Suspense>
   );
 }
