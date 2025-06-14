@@ -36,6 +36,9 @@ export const authOptions: NextAuthOptions = {
 
         if (!isPasswordCorrect) return null;
 
+        // Ensure email is always a string (not null)
+        if (!user.email) return null;
+
         return { id: user.id, email: user.email, role: user.role };
       },
     }),
