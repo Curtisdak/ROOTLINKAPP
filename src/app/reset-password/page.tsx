@@ -18,6 +18,7 @@ import { useRouter } from "next/navigation";
 import { FullLoading } from "@/components/customComponents/FullLoading";
 import { Eye, EyeClosed } from "lucide-react";
 import { useSearchParams } from "next/navigation";
+import { Suspense } from "react";
 
 //in this, the user is going to create is new so we can send him the link to reset his password
 
@@ -86,6 +87,7 @@ const ResetPasswordPage = () => {
   }
 
   return (
+      <Suspense fallback={<div>Chargement...</div>}>
     <div className="flex">
       <div className="hidden lg:flex w-screen  h-screen  bg-primary justify-center items-center flex-col text-black">
         <h1 className="text-4xl font-bold mb-12">New App</h1>
@@ -178,7 +180,7 @@ const ResetPasswordPage = () => {
           </form>
         </Form>
       </div>
-    </div>
+    </div></Suspense>
   );
 };
 

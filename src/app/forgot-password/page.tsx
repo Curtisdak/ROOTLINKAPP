@@ -18,6 +18,7 @@ import { useRouter } from "next/navigation";
 import { FullLoading } from "@/components/customComponents/FullLoading";
 import { ArrowLeft } from "lucide-react";
 import { useSearchParams } from "next/navigation";
+import { Suspense } from "react";
 
 //in this the user is going to enter is email so we can send him the link to reset his password
 
@@ -69,6 +70,8 @@ const ForgotPasswordPage = () => {
   }
 
   return (
+
+      <Suspense fallback={<div>Chargement...</div>}>
     <div className="flex">
       <div className="hidden lg:flex w-screen  h-screen  bg-primary justify-center items-center flex-col text-black">
         <h1 className="text-4xl font-bold mb-12">Serik Immo</h1>
@@ -127,6 +130,7 @@ const ForgotPasswordPage = () => {
         </Form>
       </div>
     </div>
+     </Suspense>
   );
 };
 
