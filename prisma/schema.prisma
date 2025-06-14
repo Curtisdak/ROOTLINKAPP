@@ -25,6 +25,8 @@ model User {
   avatar         String?
   image          String?
   hashedPassword String?
+  resetToken     String?
+  resetExpires   DateTime?
   role           Role           @default(USER)
   accounts       Account[]
   sessions       Session[]
