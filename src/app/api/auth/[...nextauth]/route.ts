@@ -9,7 +9,7 @@ import { handleJWT, handleSession } from "@/lib/auth-callbacks";
 import { compare } from "bcryptjs";
 import { randomUUID } from "crypto";
 
-export const authOption: NextAuthOptions = {
+export const authOptions: NextAuthOptions = {
   adapter: PrismaAdapter(prisma),
   providers: [
     GoogleProvider({
@@ -116,5 +116,5 @@ export const authOption: NextAuthOptions = {
   },
 };
 
-const handler = NextAuth(authOption);
+const handler = NextAuth(authOptions);
 export { handler as GET, handler as POST };
