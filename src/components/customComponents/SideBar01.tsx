@@ -79,7 +79,7 @@ export default function SideBar() {
                 <p>Theme et Sondage</p>{" "}
               </Link>
 
-              {currentUser?.role !== "ADMIN" && (
+              {currentUser?.role !== "USER" && (
                 <div className="-6  w-full">
                   <Separator className="my-2" />
                   <Link href="/admin" className="">
