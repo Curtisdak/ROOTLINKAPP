@@ -1,18 +1,14 @@
 "use client";
-
-import { useState } from "react";
+;
 import Image from "next/image";
 import { useSession } from "next-auth/react";
-import { Product,  } from "@/context/affiliateContext";
+import { Product } from "@/context/affiliateContext";
 
-import {
-  ExternalLink,
-  ChevronDown,
-  ChevronUp,
-} from "lucide-react";
+import { ExternalLink,  } from "lucide-react";
 
 import DeleteUI from "./DeleteUI";
 import EditProductDialog from "./EditProductDialog";
+import ShowDescriptionUi from "./showDescriptionUi";
 
 interface Props {
   product: Product;
@@ -21,12 +17,9 @@ interface Props {
 export default function AffiliateCard({ product }: Props) {
   const { data: session } = useSession();
   const isAdmin = session?.user?.role && session.user.role !== "USER";
-  
-
-  const [showFullDesc, setShowFullDesc] = useState(false);
 
   return (
-    <div className="rounded-2xl border w-auto  lg:w-[300px] bg-white dark:bg-background shadow-md hover:shadow-xl transition-all overflow-hidden flex flex-col">
+    <div className="rounded-2xl border w-auto  lg:w-[350px] bg-white dark:bg-background shadow-md hover:shadow-xl transition-all overflow-hidden flex flex-col">
       {/* Image */}
       <div className="relative w-full  lg:w-[300px] h-64  flex items-center justify-center">
         <Image
@@ -41,42 +34,23 @@ export default function AffiliateCard({ product }: Props) {
       {/* Content */}
       <div className="flex flex-col gap-3 p-5">
         <div className="flex items-start justify-between">
-          <h2 className="text-lg font-semibold leading-snug">
+          <h2 className="text-lg font-semibold leading-snug line-clamp-1">
             {product.title}
           </h2>
         </div>
 
         {/* Description */}
+        <p className="line-clamp-2">{product.description}</p>
+
+
+        <div className="flex justify-between items-center"> 
+             
         <div className="text-sm text-muted-foreground">
-          {showFullDesc ? (
-            product.description
-          ) : (
-            <p className="line-clamp-2">{product.description}</p>
-          )}
-          <button
-            onClick={() => setShowFullDesc(!showFullDesc)}
-            className="mt-1 text-xs text-blue-600 hover:underline flex items-center gap-1"
-          >
-            {showFullDesc ? (
-              <>
-                Réduire <ChevronUp size={14} />
-              </>
-            ) : (
-              <>
-                Voir plus <ChevronDown size={14} />
-              </>
-            )}
-          </button>
+          <ShowDescriptionUi product={product} />
         </div>
 
         {/* Infos */}
         <div className="flex flex-col gap-1 text-sm">
-          {product.category && (
-            <span className="text-muted-foreground">
-              Catégorie :{" "}
-              <span className="font-medium">{product.category}</span>
-            </span>
-          )}
           {product.price && (
             <span className="text-primary font-bold text-lg">
               {product.price} €
@@ -84,20 +58,22 @@ export default function AffiliateCard({ product }: Props) {
           )}
         </div>
 
+        </div>
+
         {/* Amazon link */}
         <a
           href={product.amazonUrl}
           target="_blank"
           rel="noopener noreferrer"
-          className="inline-flex items-center gap-1 text-sm text-blue-600 hover:underline mt-2 font-medium"
+          className="inline-flex items-center justify-center gap-1 text-md hover:underline mt-2 font-medium border-2 border-primary/20  hover:bg-primary/10 ease-in-out duration-500 p-2 rounded-lg "
         >
           <ExternalLink size={14} /> Acheter sur Amazon
         </a>
 
         {isAdmin && (
           <div className="flex items-center gap-10">
-            <DeleteUI productId={product.id} alertTitle={""} alertDesc={""}  />
-            <EditProductDialog product={product}/>
+            <DeleteUI productId={product.id} alertTitle={""} alertDesc={""} />
+            <EditProductDialog product={product} />
           </div>
         )}
       </div>

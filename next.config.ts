@@ -13,11 +13,16 @@ const nextConfig: NextConfig = {
         hostname: "images.pexels.com",
         pathname: "/**", // Allow all images from this domain
       },
-       {
-   protocol: "https",
-   hostname: "m.media-amazon.com",
-   pathname: "/**", // Allow all images from this domain
- },
+      {
+        protocol: "https",
+        hostname: "m.media-amazon.com",
+        pathname: "/**", // Allow all images from this domain
+      },
+      {
+        protocol: "https",
+        hostname: 'amzn.to',
+        pathname: "/**", // Allow all images from this domain
+      },
     ],
   },
 };
