@@ -12,22 +12,20 @@ const NavBar = () => {
 
   return (
     <div className="bg-background flex justify-between items-center sticky w-full px-4 py-2 border-b">
+      <div className="flex gap-2 items-center"> 
+       <SideBar01 />
       {/* Left Logo */}
       <Link href="/">
         <p className="font-bold text-primary text-lg">rootlink {user?.role}</p>
       </Link>
-
+ </div>
       {/* Right Icons (Mobile & Desktop) */}
       <div className="flex items-center gap-3">
         <ThemeToggle />
-        {!user?.id ? (
+        {!user?.id && (
           <Link href="/login">
             <Button variant="ghost">Se connecter</Button>
           </Link>
-        ) : (
-          <div className="">
-            <SideBar01 />
-          </div>
         )}
       </div>
     </div>

@@ -5,15 +5,10 @@ import { compare } from "bcryptjs";
 import { prisma } from "@/lib/prisma";
 import { NextAuthOptions } from "next-auth";
 import { handleJWT, handleSession } from "@/lib/auth-callbacks";
-import { randomUUID } from "crypto";
 
 export const authOptions: NextAuthOptions = {
   adapter: PrismaAdapter(prisma),
   providers: [
-    GoogleProvider({
-      clientId: process.env.GOOGLE_CLIENT_ID!,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
-    }),
     CredentialsProvider({
       name: "Credentials",
       credentials: {
@@ -29,58 +24,80 @@ export const authOptions: NextAuthOptions = {
 
         if (!user || !user.hashedPassword) return null;
 
-        const isPasswordCorrect = await compare(
-          credentials.password,
-          user.hashedPassword
-        );
+        const isValid = await compare(credentials.password, user.hashedPassword);
+        if (!isValid) return null;
 
-        if (!isPasswordCorrect) return null;
-
-        // Ensure email is always a string (not null)
+        // Ensure email is always a string
         if (!user.email) return null;
 
-        return { id: user.id, email: user.email, role: user.role };
+        return {
+          id: user.id,
+          email: user.email,
+          role: user.role,
+        };
+      },
+    }),
+
+    GoogleProvider({
+      clientId: process.env.GOOGLE_CLIENT_ID!,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+      authorization:
+        "https://accounts.google.com/o/oauth2/v2/auth?prompt=consent&access_type=offline&response_type=code",
+      profile(profile) {
+        return {
+          id: profile.sub,
+          name: profile.name,
+          firstname: profile.given_name ?? profile.name?.split(" ")[0],
+          lastname: profile.family_name ?? profile.name?.split(" ")[1],
+          email: profile.email,
+          avatar: profile.picture,
+          emailVerified: profile.email_verified ? new Date() : null,
+          role: "USER",
+        };
       },
     }),
   ],
+
+  session: {
+    strategy: "jwt",
+  },
+
   secret: process.env.NEXTAUTH_SECRET,
+
   callbacks: {
     jwt: handleJWT,
     session: handleSession,
-    async signIn({ user, account }) {
-      const dbUser = await prisma.user.findUnique({
-        where: { id: user.id },
-      });
 
-      if (!dbUser) return true;
+    async signIn({ user, account, profile }) {
+      // If user signs in with Google
+      if (account?.provider === "google") {
+        const existingUser = await prisma.user.findUnique({
+          where: { email: profile?.email || user.email! },
+        });
 
-      await prisma.session.deleteMany({
-        where: { userId: user.id },
-      });
+        const linkedAccount = await prisma.account.findFirst({
+          where: {
+            provider: "google",
+            providerAccountId: profile?.sub,
+          },
+        });
 
-      const sessionToken =
-        typeof account?.access_token === "string"
-          ? account.access_token
-          : randomUUID();
-
-      await prisma.session.create({
-        data: {
-          userId: user.id,
-          sessionToken,
-          expires: new Date(Date.now() + 1000 * 60 * 60 * 24 * 30),
-        },
-      });
+        if (existingUser && !linkedAccount) {
+          // Email exists but no account linked to Google
+          throw new Error("OAuthAccountNotLinked");
+        }
+      }
 
       return true;
     },
+
     async redirect({ baseUrl }) {
       return baseUrl;
     },
   },
+
   pages: {
     signIn: "/login",
-  },
-  session: {
-    strategy: "jwt",
+    error: "/login", // Handle error=OAuthAccountNotLinked in UI
   },
 };

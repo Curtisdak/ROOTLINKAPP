@@ -1,4 +1,6 @@
 import React from "react";
+// Adjust the import according to how deleteProduct is exported.
+// If deleteProduct is a default export:
 import {
   AlertDialog,
   AlertDialogAction,
@@ -12,15 +14,17 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import { Trash2 } from "lucide-react";
+import { useAffiliate } from "@/context/affiliateContext";
 
-interface DeletePropertyUIProps {
-  propertyId: string;
-  onDelete: (id: string) => void;
+interface DeleteUIProps {
+  productId: string;
   alertTitle: string;
   alertDesc: string;
 }
 
-const DeletePropertyUI: React.FC<DeletePropertyUIProps> = ({ propertyId, onDelete, alertTitle, alertDesc }) => {
+const DeleteUI: React.FC<DeleteUIProps> = ({alertTitle, alertDesc,productId }) => {
+
+  const {deleteProduct} = useAffiliate()
   return (
     <AlertDialog>
       <AlertDialogTrigger asChild>
@@ -30,13 +34,13 @@ const DeletePropertyUI: React.FC<DeletePropertyUIProps> = ({ propertyId, onDelet
       </AlertDialogTrigger>
       <AlertDialogContent>
         <AlertDialogHeader>
-          <AlertDialogTitle>{alertTitle}</AlertDialogTitle>
-          <AlertDialogDescription>{alertDesc}</AlertDialogDescription>
+          <AlertDialogTitle>{alertTitle || "Supprimer"}</AlertDialogTitle>
+          <AlertDialogDescription>{alertDesc || "êtes vous sûr de le supprimer"}</AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
           <AlertDialogCancel>Annuler</AlertDialogCancel>
           <AlertDialogAction asChild>
-            <Button className="font-bold"  onClick={() => onDelete(propertyId)}>
+            <Button className="font-bold"  onClick={() => deleteProduct(productId)}>
               Supprimer
             </Button>
           </AlertDialogAction>
@@ -46,4 +50,4 @@ const DeletePropertyUI: React.FC<DeletePropertyUIProps> = ({ propertyId, onDelet
   );
 };
 
-export default DeletePropertyUI;
+export default DeleteUI;
