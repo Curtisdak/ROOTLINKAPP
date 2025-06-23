@@ -71,7 +71,7 @@ export default function ProductFormDialog() {
               {field === "description" ? (
                 <Textarea {...form.register(field)} />
               ) : (
-                <Input type={field === "price" ? "number" : "text"} {...form.register(field)} />
+                <Input type={field === "price" ? "text" : "text"} {...form.register(field)} />
               )}
             </div>
           ))}
