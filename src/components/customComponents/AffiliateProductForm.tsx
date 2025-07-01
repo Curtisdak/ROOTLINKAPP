@@ -1,6 +1,13 @@
 "use client";
 
-import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogTrigger,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -65,17 +72,33 @@ export default function ProductFormDialog() {
         </DialogHeader>
 
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 py-2">
-          {(["title", "description", "imageUrl", "amazonUrl", "category", "price"] as const).map((field) => (
+          {(
+            [
+              "title",
+              "description",
+              "imageUrl",
+              "amazonUrl",
+              "category",
+              "price",
+            ] as const
+          ).map((field) => (
             <div key={field}>
-              <Label htmlFor={field} className="capitalize">{field}</Label>
+              <Label htmlFor={field} className="capitalize">
+                {field}
+              </Label>
               {field === "description" ? (
                 <Textarea {...form.register(field)} />
               ) : (
-                <Input type={field === "price" ? "text" : "text"} {...form.register(field)} />
+                <Input
+                  type={field === "price" ? "text" : "text"}
+                  {...form.register(field)}
+                />
               )}
             </div>
           ))}
-          <Button type="submit" className="mt-2 w-full">Ajouter</Button>
+          <Button type="submit" className="mt-2 w-full">
+            Ajouter
+          </Button>
         </form>
       </DialogContent>
     </Dialog>

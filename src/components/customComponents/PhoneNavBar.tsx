@@ -21,6 +21,9 @@ const PhoneNavBar = () => {
 
   if(shouldHide) return null
 
+  const show  = false;
+if(show===false)return
+
   return (
     <div className="lg:hidden bg-background py-2 px-4 flex items-center justify-evenly fixed bottom-0 w-full z-50 rounded-t-2xl border-t">
       {navItems.map(({ href, icon, label }) => {
