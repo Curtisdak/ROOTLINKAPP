@@ -3,7 +3,7 @@ import React from 'react'
 import { Suspense } from 'react'
 import AffiliateProductForm from '../../components/customComponents/AffiliateProductForm'
 import { getServerSession } from "next-auth";
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { authOptions } from "@/lib/auth";
 import { redirect } from "next/navigation";
 
 const AdminPage = async  () => {
