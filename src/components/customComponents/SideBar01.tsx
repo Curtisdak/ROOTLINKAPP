@@ -10,7 +10,7 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import { AlignJustify} from "lucide-react";
+import { AlignJustify } from "lucide-react";
 import Link from "next/link";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { signOut, useSession } from "next-auth/react";
@@ -18,6 +18,8 @@ import { signOut, useSession } from "next-auth/react";
 export default function SideBar() {
   const { data: session } = useSession();
   const currentUser = session?.user;
+
+  const show = false;
 
   const avatarFallback = currentUser?.name
     ? currentUser.name.substring(0, 2).toUpperCase()
@@ -49,21 +51,22 @@ export default function SideBar() {
                 {" "}
                 <p>Profile </p>{" "}
               </Link>
-              <Link
-                href={"./"}
+              <a
+                href={"https://www.instagram.com/rootlink.officiel/"  } target="_blank" 
                 className="flex text-muted-foreground items-baseline gap-2 w-full hover:text-primary  "
               >
                 {" "}
                 <p>Lives </p>{" "}
-              </Link>
+              </a>
               <Separator />
-              <Link
+              {}{" "}
+             {show && <Link
                 href={"/Accueil"}
                 className="flex text-muted-foreground items-baseline gap-2 w-full hover:text-primary  "
               >
                 {" "}
                 <p>Conversation </p>{" "}
-              </Link>
+              </Link>} 
               <Link
                 href={"/products"}
                 className="flex text-muted-foreground items-baseline gap-2 w-full hover:text-primary  "
@@ -71,47 +74,49 @@ export default function SideBar() {
                 {" "}
                 <p>Boutique </p>{" "}
               </Link>
-              <Link
+             {show && <Link
                 href={"./marketplace"}
                 className="flex text-muted-foreground items-baseline gap-2 w-full hover:text-primary  "
               >
                 {" "}
                 <p>Theme et Sondage</p>{" "}
-              </Link>
-
-              {currentUser?.role !== "USER" && (
-                <div className="-6  w-full">
-                  <Separator className="my-2" />
-                  <Link href="/admin" className="">
-                    <p className="font-medium text-primary hover:underline">
-                      Admin{" "}
-                    </p>
-                  </Link>
-                </div>
-              )}
+              </Link> }
+              {currentUser?.role !== "USER" ||
+                (!session && (
+                  <div className="-6  w-full">
+                    <Separator className="my-2" />
+                    <Link href="/admin" className="">
+                      <p className="font-medium text-primary hover:underline">
+                        Admin{" "}
+                      </p>
+                    </Link>
+                  </div>
+                ))}
             </div>
           </ScrollArea>
 
           <SheetFooter>
-            <div className="flex  items-center gap-2">
-              <Avatar className="cter ">
-                <AvatarImage
-                  src={currentUser?.image || ""}
-                  alt={currentUser?.name || "user"}
-                  className="scale-150"
-                />
-                <AvatarFallback>{avatarFallback}</AvatarFallback>
-              </Avatar>
-              <Button
-                variant={"link"}
-                onClick={() => {
-                  signOut({ callbackUrl: "/" });
-                }}
-              >
-                {" "}
-                Se déconnecter{" "}
-              </Button>
-            </div>
+            {session && (
+              <div className="flex  items-center gap-2">
+                <Avatar className="cter ">
+                  <AvatarImage
+                    src={currentUser?.image || ""}
+                    alt={currentUser?.name || "user"}
+                    className="scale-150"
+                  />
+                  <AvatarFallback>{avatarFallback}</AvatarFallback>
+                </Avatar>
+                <Button
+                  variant={"link"}
+                  onClick={() => {
+                    signOut({ callbackUrl: "/" });
+                  }}
+                >
+                  {" "}
+                  Se déconnecter{" "}
+                </Button>
+              </div>
+            )}
             <Link href="/" className="text-sm text-muted-foreground italiccd  ">
               Developed by Serik
             </Link>

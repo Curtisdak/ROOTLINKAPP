@@ -9,6 +9,9 @@ import { useSession } from "next-auth/react";
 const NavBar = () => {
   const { data: session } = useSession();
   const user = session?.user;
+  
+
+  
 
   return (
     <div className="bg-background flex justify-between items-center sticky w-full px-4 py-2 border-b">
