@@ -1,0 +1,4 @@
+PORT='your port number' 
+DATABASE_URL="postgresql://xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+NEXTAUTH_URL=http://localhost:3000
+#NEXTAUTH_URL=https://www.domain name

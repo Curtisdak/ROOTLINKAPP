@@ -1,0 +1,157 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+ // output   = "../src/generated/prisma"
+
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+
+
+model User {
+  id               String            @id @default(cuid())
+  name             String?
+  firstname        String
+  lastname         String
+  email            String?           @unique
+  emailVerified    DateTime?
+  phoneVerified    Boolean           @default(false)
+  avatar           String?
+  image            String?
+  hashedPassword   String?
+  resetToken       String?
+  resetExpires     DateTime?
+  role             Role              @default(USER)
+  accounts         Account[]
+  sessions         Session[]
+  notifications    Notification[]
+  Poll             Poll[]
+  pollParticipants PollParticipant[] // <--- NEW
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+
+  user User @relation(fields: [userId], references: [id])
+}
+
+model AffiliateProduct {
+  id          String   @id @default(cuid())
+  title       String
+  description String
+  imageUrl    String
+  amazonUrl   String
+  price       Float?
+  category    String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Notification {
+  id        String           @id @default(uuid())
+  userId    String
+  user      User             @relation(fields: [userId], references: [id])
+  type      NotificationType
+  content   String
+  readAt    DateTime?
+  createdAt DateTime         @default(now())
+}
+
+// -----------------------------
+// 🗳️ Poll System Below
+// -----------------------------
+
+model Poll {
+  id           String            @id @default(cuid())
+  question     String
+  published     Boolean          @default(false) // <-- NEWprisma
+  options      PollOption[]
+  participants PollParticipant[]
+  createdBy    User              @relation(fields: [createdById], references: [id])
+  createdById  String
+  createdAt    DateTime          @default(now())
+}
+
+model PollOption {
+  id     String @id @default(cuid())
+  text   String
+  poll   Poll   @relation(fields: [pollId], references: [id])
+  pollId String
+  votes  Vote[]
+}
+
+model PollParticipant {
+  id     String  @id @default(cuid())
+  userId String? // nullable for anonymous voters
+  user   User?   @relation(fields: [userId], references: [id])
+  gender Gender  @default(UNKNOWN)
+  poll   Poll    @relation(fields: [pollId], references: [id])
+  pollId String
+  vote   Vote?
+
+  createdAt DateTime @default(now())
+
+  @@unique([userId, pollId]) // prevent same user voting twice in same poll
+}
+
+model Vote {
+  id            String          @id @default(cuid())
+  participant   PollParticipant @relation(fields: [participantId], references: [id])
+  participantId String
+  option        PollOption      @relation(fields: [optionId], references: [id])
+  optionId      String
+  createdAt     DateTime        @default(now())
+
+  @@unique([participantId]) // one vote per participant
+}
+
+enum Gender {
+  MALE
+  FEMALE
+  UNKNOWN
+}
+
+enum Role {
+  USER
+  ADMIN
+  CREATOR
+}
+
+enum NotificationType {
+  MESSAGE
+  NEWPOLL
+  NEWUSER
+}

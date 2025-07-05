@@ -81,17 +81,17 @@ export default function SideBar() {
                 {" "}
                 <p>Theme et Sondage</p>{" "}
               </Link> }
-              {currentUser?.role !== "USER" ||
-                (!session && (
-                  <div className="-6  w-full">
+             
+             
+                {currentUser?.role==="ADMIN" &&   <div className="-6  w-full">
                     <Separator className="my-2" />
                     <Link href="/admin" className="">
                       <p className="font-medium text-primary hover:underline">
                         Admin{" "}
                       </p>
                     </Link>
-                  </div>
-                ))}
+                  </div>}
+                
             </div>
           </ScrollArea>
 
