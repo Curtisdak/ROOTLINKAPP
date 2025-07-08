@@ -2,7 +2,7 @@
 ;
 import Image from "next/image";
 import { useSession } from "next-auth/react";
-import { Product } from "@/context/affiliateContext";
+import { Product, useAffiliate } from "@/context/affiliateContext";
 
 import { ExternalLink,  } from "lucide-react";
 
@@ -17,7 +17,7 @@ interface Props {
 export default function AffiliateCard({ product }: Props) {
   const { data: session } = useSession();
   const isAdmin = session?.user?.role && session.user.role !== "USER";
-
+ const {deleteProduct} = useAffiliate()
   return (
     <div className="rounded-2xl border w-auto  lg:w-[350px] bg-white dark:bg-background shadow-md hover:shadow-xl transition-all overflow-hidden flex flex-col">
       {/* Image */}
@@ -72,7 +72,7 @@ export default function AffiliateCard({ product }: Props) {
 
         {isAdmin && (
           <div className="flex items-center gap-10">
-            <DeleteUI productId={product.id} alertTitle={""} alertDesc={""} />
+            <DeleteUI productId={product.id} alertTitle={""} alertDesc={""} deleteAction={deleteProduct} />
             <EditProductDialog product={product} />
           </div>
         )}

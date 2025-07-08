@@ -24,42 +24,42 @@ import {
 } from "@/components/ui/form";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useState } from "react";
-import { Plus, Trash2 } from "lucide-react";
+import { Plus, SquarePen, Trash2 } from "lucide-react";
 import { usePolls } from "@/context/pollContext";
+import { Poll } from "@/context/pollContext";
 
 const pollSchema = z.object({
   question: z.string().min(1, "La question est obligatoire"),
-  options: z
-    .array(z.string().min(1, "Option vide"))
-    .min(2, "Ajoutez au moins 2 options"),
+  options: z.array(z.string().min(1, "Option vide")).min(2, "Ajoutez au moins 2 options"),
   published: z.boolean(),
 });
 
 type PollFormData = z.infer<typeof pollSchema>;
 
-export default function CreatePollForm() {
+export default function UpdatePollForm({ poll }: { poll: Poll }) {
   const [open, setOpen] = useState(false);
-  const [isloading, setIsloading] = useState(false);
- const {refreshPolls} =usePolls()
+  const [isLoading, setIsLoading] = useState(false);
+  const { refreshPolls } = usePolls();
+
   const form = useForm<PollFormData>({
     resolver: zodResolver(pollSchema),
     defaultValues: {
-      question: "",
-      options: ["", ""],
-      published: false,
+      question: poll.question,
+      options: poll.options.map((opt) => opt.text),
+      published: poll.published,
     },
   });
 
-  const { fields, append, remove } = useFieldArray<PollFormData>({
+  const { fields, append, remove } = useFieldArray({
     name: "options",
     control: form.control,
   });
 
   const onSubmit = async (data: PollFormData) => {
-    setIsloading(true);
+    setIsLoading(true);
     try {
-      const res = await fetch("/api/poll", {
-        method: "POST",
+      const res = await fetch(`/api/poll/${poll.id}`, {
+        method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data),
       });
@@ -69,27 +69,28 @@ export default function CreatePollForm() {
         toast.error("Erreur : " + error.error);
         return;
       }
-      toast.success("Sondage créé avec succès !");
-      form.reset(); // clear form
-      setOpen(false); // close modal
-      setIsloading(false);
-      refreshPolls()
+
+      toast.success("Sondage mis à jour !");
+      refreshPolls();
+      setOpen(false);
     } catch (error) {
-      console.log(error);
-      toast.error("Erreur lors de la création du sondage.");
+      console.error(error);
+      toast.error("Erreur lors de la mise à jour.");
+    } finally {
+      setIsLoading(false);
     }
   };
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button variant={"outline"}> Créez  </Button>
+        <SquarePen className="cursor-pointer text-muted-foreground hover:text-primary transition" />
       </DialogTrigger>
       <DialogContent className="max-w-xl">
         <DialogHeader>
-          <DialogTitle>Créer un nouveau sondage</DialogTitle>
+          <DialogTitle>Modifier le sondage</DialogTitle>
           <DialogDescription>
-            Entrez la question et les options du sondage.
+            Modifiez la question et les options du sondage.
           </DialogDescription>
         </DialogHeader>
 
@@ -102,10 +103,7 @@ export default function CreatePollForm() {
                 <FormItem>
                   <FormLabel>Question</FormLabel>
                   <FormControl>
-                    <Input
-                      placeholder="Entrez la question du sondage"
-                      {...field}
-                    />
+                    <Input placeholder="Entrez la question du sondage" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -122,10 +120,7 @@ export default function CreatePollForm() {
                     render={({ field }) => (
                       <FormItem className="flex-1">
                         <FormControl>
-                          <Input
-                            placeholder={`Option ${index + 1}`}
-                            {...field}
-                          />
+                          <Input placeholder={`Option ${index + 1}`} {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -133,18 +128,14 @@ export default function CreatePollForm() {
                   />
                   {fields.length > 2 && (
                     <Trash2
-                      className=" text-primary  hover:text-red-500 hover:scale-150 cursor-pointer ease-in-out duration-300"
+                      className="text-primary hover:text-red-500 hover:scale-150 cursor-pointer ease-in-out duration-300"
                       onClick={() => remove(index)}
                     />
                   )}
                 </div>
               ))}
-              <Button
-                type="button"
-                variant={"secondary"}
-                onClick={() => append("")}
-              >
-                Ajouter <Plus />
+              <Button type="button" variant={"secondary"} onClick={() => append("")}>
+                Ajouter <Plus className="ml-1 h-4 w-4" />
               </Button>
             </div>
 
@@ -165,19 +156,16 @@ export default function CreatePollForm() {
               )}
             />
 
-            <Button disabled={isloading} type="submit" className="w-full ">
-              {isloading ? "En cours de creation ..." : "Créer le sondage"}
+            <Button disabled={isLoading} type="submit" className="w-full">
+              {isLoading ? "Mise à jour en cours..." : "Mettre à jour"}
             </Button>
           </form>
-          <div>
-            {" "}
-            <p className="text-muted-foreground text-center text-sm">
-              Powered by{" "}
-              <a className="font-bold" href="https//www.serik.io">
-                Serik
-              </a>{" "}
-            </p>
-          </div>
+          <p className="text-muted-foreground text-center text-sm mt-2">
+            Powered by{" "}
+            <a className="font-bold" href="https://www.serik.io" target="_blank">
+              Serik
+            </a>
+          </p>
         </Form>
       </DialogContent>
     </Dialog>

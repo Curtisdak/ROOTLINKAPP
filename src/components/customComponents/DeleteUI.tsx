@@ -14,22 +14,22 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import { Trash2 } from "lucide-react";
-import { useAffiliate } from "@/context/affiliateContext";
+
 
 interface DeleteUIProps {
   productId: string;
   alertTitle: string;
   alertDesc: string;
+  deleteAction: (id:string) => void;
 }
 
-const DeleteUI: React.FC<DeleteUIProps> = ({alertTitle, alertDesc,productId }) => {
+const DeleteUI: React.FC<DeleteUIProps> = ({alertTitle, alertDesc,productId,deleteAction, }) => {
 
-  const {deleteProduct} = useAffiliate()
   return (
     <AlertDialog>
       <AlertDialogTrigger asChild>
         
-          <Trash2 className="text-red-500/40 hover:scale-110 hover:text-red-500/100 ease-in-out duration-500 w-8 h-8 cursor-pointer " />
+          <Trash2 className="text-red-500/40 hover:scale-110 hover:text-red-500/100 ease-in-out duration-500 w-6 h-6 cursor-pointer " />
         
       </AlertDialogTrigger>
       <AlertDialogContent>
@@ -40,7 +40,7 @@ const DeleteUI: React.FC<DeleteUIProps> = ({alertTitle, alertDesc,productId }) =
         <AlertDialogFooter>
           <AlertDialogCancel>Annuler</AlertDialogCancel>
           <AlertDialogAction asChild>
-            <Button className="font-bold"  onClick={() => deleteProduct(productId)}>
+            <Button className="font-bold"  onClick={() => deleteAction(productId)   }>
               Supprimer
             </Button>
           </AlertDialogAction>

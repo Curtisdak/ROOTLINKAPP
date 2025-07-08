@@ -108,7 +108,7 @@ model Poll {
 model PollOption {
   id     String @id @default(cuid())
   text   String
-  poll   Poll   @relation(fields: [pollId], references: [id])
+  poll   Poll   @relation(fields: [pollId], references: [id],onDelete: Cascade)
   pollId String
   votes  Vote[]
 }
@@ -118,7 +118,7 @@ model PollParticipant {
   userId String? // nullable for anonymous voters
   user   User?   @relation(fields: [userId], references: [id])
   gender Gender  @default(UNKNOWN)
-  poll   Poll    @relation(fields: [pollId], references: [id])
+  poll   Poll    @relation(fields: [pollId], references: [id],onDelete: Cascade)
   pollId String
   vote   Vote?
 
@@ -129,9 +129,9 @@ model PollParticipant {
 
 model Vote {
   id            String          @id @default(cuid())
-  participant   PollParticipant @relation(fields: [participantId], references: [id])
+  participant   PollParticipant @relation(fields: [participantId], references: [id],onDelete: Cascade)
   participantId String
-  option        PollOption      @relation(fields: [optionId], references: [id])
+  option        PollOption      @relation(fields: [optionId], references: [id],onDelete: Cascade)
   optionId      String
   createdAt     DateTime        @default(now())
 

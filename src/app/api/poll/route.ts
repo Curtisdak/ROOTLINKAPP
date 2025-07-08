@@ -56,10 +56,10 @@ export async function GET (){
         },
         orderBy:{createdAt:"desc"}
     })
-  if(polls.length < 1 ){
+  if(!polls.length){
     return NextResponse.json({error:"Sondage indisponible"}, {status:400})
   }
 
 
-    return NextResponse.json(polls);
+    return NextResponse.json(polls,{status:200});
 }
