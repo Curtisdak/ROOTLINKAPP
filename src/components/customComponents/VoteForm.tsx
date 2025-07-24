@@ -7,9 +7,7 @@ import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
 import { Separator } from "../ui/separator";
-import { Loader2, CheckCircle } from "lucide-react";
-import { useSession } from "next-auth/react";
-
+import { Loader2, CheckCircle, RotateCw } from "lucide-react";
 interface VoteFormProps {
   pollId: string;
   options: { id: string; text: string }[];
@@ -38,8 +36,20 @@ export default function VoteForm({
   const [submitted, setSubmitted] = useState(false);
   const [results, setResults] = useState<Result[] | null>(null);
   const [loadingResults, setLoadingResults] = useState(false);
+  const [refreshBtn, setRefreshBtn] = useState(false);
 
-  const { data: Session } = useSession();
+  const fetchResults = async () => {
+    try {
+      const res = await fetch(`/api/poll/${pollId}/results`);
+      if (!res.ok) return;
+      const data = await res.json();
+      setResults(data.results);
+    } catch (error) {
+      console.error("Erreur lors du chargement des résultats", error);
+    } finally {
+      setLoadingResults(false);
+    }
+  };
 
   const handleVote = async () => {
     if (!selectedOption || !gender) {
@@ -76,17 +86,33 @@ export default function VoteForm({
     }
   };
 
-  const fetchResults = async () => {
-    try {
-      const res = await fetch(`/api/poll/${pollId}/results`);
-      if (!res.ok) return;
-      const data = await res.json();
-      setResults(data.results);
-    } catch (error) {
-      console.error("Erreur lors du chargement des résultats", error);
-    } finally {
-      setLoadingResults(false);
+  const toggleResult = async () => {
+    const nextState = !showResultsManually;
+    setShowResultsManually(nextState);
+
+    if (nextState) {
+      // On va afficher les résultats → on recharge
+      setSubmitted(true); // important pour basculer vers le bloc "résultats"
+      setLoadingResults(true);
+      await fetchResults();
+    } else {
+      // On revient vers le vote
+      setSubmitted(false); // pour réafficher le formulaire
     }
+  };
+
+  const refreshResult = () => {
+    setRefreshBtn(true);
+    setSubmitted(true);
+    setShowResultsManually(false);
+
+    setTimeout(async () => {
+      setSubmitted(false);
+      await fetchResults();
+      setRefreshBtn(false);
+      setShowResultsManually(true);
+      setSubmitted(true);
+    }, 2000);
   };
 
   return (
@@ -98,12 +124,8 @@ export default function VoteForm({
     >
       {isCreatorOrAdmin ? (
         <div className="text-right mb-2">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => setShowResultsManually((prev) => !prev)}
-          >
-            {showResultsManually ? "< vote " : "résultats >"}
+          <Button variant="outline" size="sm" onClick={() => toggleResult()}>
+            {showResultsManually ? "← Retour au vote" : "Voir les résultats"}
           </Button>
         </div>
       ) : null}
@@ -221,7 +243,20 @@ export default function VoteForm({
                   <p>Merci pour votre vote !</p>
                 </div>
 
-                <h2 className="text-xl font-semibold text-center">Résultats</h2>
+                <h2 className="text-xl font-semibold text-center relative ">
+                  Résultats{" "}
+                  <span
+                    onClick={() => refreshResult()}
+                    className=" cursor-pointer absolute right-0 bottom-0"
+                  >
+                    {" "}
+                    {refreshBtn === true ? (
+                      <RotateCw className="w-5 h-5 animate-spin " />
+                    ) : (
+                      <RotateCw className="w-5 h-5 " />
+                    )}{" "}
+                  </span>
+                </h2>
 
                 {results?.map((result) => (
                   <motion.div
@@ -242,7 +277,7 @@ export default function VoteForm({
                       transition={{ duration: 0.6 }}
                     />
 
-                    <div className="mt-2 text-xs text-muted-foreground space-y-1">
+                   { isCreatorOrAdmin&&  <div className="mt-2 text-xs text-muted-foreground space-y-1">
                       {result.genderBreakdown?.map((g) => (
                         <div key={g.gender} className="flex justify-between">
                           <span>
@@ -257,7 +292,7 @@ export default function VoteForm({
                           </span>
                         </div>
                       ))}
-                    </div>
+                    </div>}
                   </motion.div>
                 ))}
               </>
