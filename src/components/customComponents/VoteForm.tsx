@@ -8,6 +8,7 @@ import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
 import { Separator } from "../ui/separator";
 import { Loader2, CheckCircle, RotateCw } from "lucide-react";
+import { ShareModal } from "./ShareModal";
 interface VoteFormProps {
   pollId: string;
   options: { id: string; text: string }[];
@@ -117,18 +118,22 @@ export default function VoteForm({
 
   return (
     <motion.div
-      className="space-y-6 p-8 dark:bg-gray-900 bg-gray-900/10 rounded-xl shadow-md max-w-lg"
+      className="space-y-6 p-4 dark:bg-gray-900 bg-gray-900/10 rounded-xl shadow-md max-w-lg"
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
     >
-      {isCreatorOrAdmin ? (
-        <div className="text-right mb-2">
-          <Button variant="outline" size="sm" onClick={() => toggleResult()}>
-            {showResultsManually ? "← Retour au vote" : "Voir les résultats"}
-          </Button>
-        </div>
-      ) : null}
+      <div className="flex items-center justify-between">
+       <div className="bg-background p-3 rounded-lg ">   <ShareModal url={`${process.env.NEXTAUTH_URL}/polls/${pollId}`} /> </div>
+
+        {isCreatorOrAdmin ? (
+          <div className="text-right mb-0 bg-red-200 ">
+            <Button variant="outline" size="sm" onClick={() => toggleResult()}>
+              {showResultsManually ? "← Retour au vote" : "Voir les résultats"}
+            </Button>
+          </div>
+        ) : null}
+      </div>
       <h1 className="text-2xl font-bold mb-4 text-center">{pollQuestion}</h1>
 
       <AnimatePresence mode="wait">
@@ -277,22 +282,24 @@ export default function VoteForm({
                       transition={{ duration: 0.6 }}
                     />
 
-                   { isCreatorOrAdmin&&  <div className="mt-2 text-xs text-muted-foreground space-y-1">
-                      {result.genderBreakdown?.map((g) => (
-                        <div key={g.gender} className="flex justify-between">
-                          <span>
-                            {g.gender === "MALE"
-                              ? "Hommes"
-                              : g.gender === "FEMALE"
-                              ? "Femmes"
-                              : "LGBTQ+"}
-                          </span>
-                          <span>
-                            {g.count} vote(s) — {g.percentage}%
-                          </span>
-                        </div>
-                      ))}
-                    </div>}
+                    {isCreatorOrAdmin && (
+                      <div className="mt-2 text-xs text-muted-foreground space-y-1">
+                        {result.genderBreakdown?.map((g) => (
+                          <div key={g.gender} className="flex justify-between">
+                            <span>
+                              {g.gender === "MALE"
+                                ? "Hommes"
+                                : g.gender === "FEMALE"
+                                ? "Femmes"
+                                : "LGBTQ+"}
+                            </span>
+                            <span>
+                              {g.count} vote(s) — {g.percentage}%
+                            </span>
+                          </div>
+                        ))}
+                      </div>
+                    )}
                   </motion.div>
                 ))}
               </>

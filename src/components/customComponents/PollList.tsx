@@ -17,6 +17,7 @@ import { usePolls } from "@/context/pollContext";
 import { cn } from "@/lib/utils";
 import UpdatePollForm from "./UpdatePollForm";
 import Link from "next/link";
+import { ShareModal } from "./ShareModal";
 
 export interface PollWithOptions {
   id: string;
@@ -135,10 +136,22 @@ export default function PollList({
                     <p>Modifier</p>
                   </TooltipContent>
                 </Tooltip>
+
+                <Tooltip>
+                  <TooltipTrigger>
+                    <ShareModal url={`${process.env.NEXTAUTH_URL}/polls/${poll.id}`} />
+                  </TooltipTrigger>
+                  <TooltipContent side="bottom">
+                    <p>Partager/copier</p>
+                  </TooltipContent>
+                </Tooltip>
               </div>
 
               {/* View Results */}
-              <Link href={`/polls/${poll.id}`} className="text-primary/90 hover:text-primary/50 ease-in-out duration-200">
+              <Link
+                href={`/polls/${poll.id}`}
+                className="text-primary/90 hover:text-primary/50 ease-in-out duration-200"
+              >
                 Voir résultats
               </Link>
             </div>

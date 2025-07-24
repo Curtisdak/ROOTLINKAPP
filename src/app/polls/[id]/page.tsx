@@ -16,7 +16,7 @@ export default  function PollVotePage() {
   const [loading, setLoading] = useState(true);
 
 
-const {data:Session, status} = useSession();
+const {data:Session, } = useSession();
 
 
   useEffect(() => {
