@@ -3,11 +3,13 @@ import { createServer } from "http";
 import { Server } from "socket.io";
 import dotenv from "dotenv"
 import { registerSocketEvents } from "./socket.js"
+import { broadcastPollCreation } from "./broadcastPoll.js";
 dotenv.config();
 
 
 
 const app = express();
+app.use(express.json())
 const server = createServer(app);
 const io = new Server(server, {
     cors: {
@@ -17,6 +19,7 @@ const io = new Server(server, {
 })
 
 registerSocketEvents(io)
+broadcastPollCreation(app, io)
 
 const PORT = process.env.PORT || 4000;
 

@@ -7,6 +7,7 @@ import { ThemeProvider } from "@/components/customComponents/ThemeProvider";
 import { AuthSessionProvider } from "@/components/customComponents/AuthSessionProvider";
 import PhoneNavBar from "@/components/customComponents/PhoneNavBar";
 import { AffiliateProvider } from "@/context/affiliateContext";
+import { NotificationProvider } from "@/context/notificationContext";
 
 const fontTitle = DynaPuff({
   weight: "400",
@@ -41,18 +42,22 @@ export default function RootLayout({
         className={`${fontTitle.variable} ${fontBody.variable} ${fontPara.variable} antialiased`}
       >
         <AuthSessionProvider>
-          <AffiliateProvider>   
+          <AffiliateProvider> 
+             <NotificationProvider>     
           <ThemeProvider
             attribute="class"
-            defaultTheme="system"
+            defaultTheme="dark"
             enableSystem
             disableTransitionOnChange
           >
+            
             <NavBar />
-            <div className="pb-[70px] lg:pb-0">{children}</div>
+            <div className="pb-[70px] lg:pb-0 ">{children}</div>
+           
             <Toaster />
             <PhoneNavBar />
           </ThemeProvider>
+           </NotificationProvider>
            </AffiliateProvider>
         </AuthSessionProvider>
       </body>

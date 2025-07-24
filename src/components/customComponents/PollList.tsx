@@ -1,15 +1,10 @@
 "use client";
 
 import { useEffect } from "react";
-import { Button } from "@/components/ui/button";
 import { formatDistanceToNow } from "date-fns";
 import { fr } from "date-fns/locale/fr";
 import { FullLoading } from "./FullLoading";
-import {
-  CircleOff,
-  Radio,
- 
-} from "lucide-react";
+import { CircleOff, Radio } from "lucide-react";
 import {
   Tooltip,
   TooltipContent,
@@ -21,12 +16,23 @@ import DeleteUI from "./DeleteUI";
 import { usePolls } from "@/context/pollContext";
 import { cn } from "@/lib/utils";
 import UpdatePollForm from "./UpdatePollForm";
-import { Poll } from "@prisma/client";
+import Link from "next/link";
 
-export default function PollList({polls,refreshPolls}:{ polls: Poll[];
-  refreshPolls?: () => void;}) {
+export interface PollWithOptions {
+  id: string;
+  question: string;
+  published: boolean;
+  createdAt: string;
+  options: { id: string; text: string }[];
+}
 
-
+export default function PollList({
+  polls,
+  refreshPolls,
+}: {
+  polls: PollWithOptions[];
+  refreshPolls?: () => void;
+}) {
   const { loading, setPolls } = usePolls();
 
   const deletePoll = async (id: string) => {
@@ -48,8 +54,6 @@ export default function PollList({polls,refreshPolls}:{ polls: Poll[];
     }
   };
 
-  
-
   useEffect(() => {
     if (refreshPolls) {
       refreshPolls();
@@ -61,7 +65,7 @@ export default function PollList({polls,refreshPolls}:{ polls: Poll[];
 
   if (polls.length === 0)
     return (
-      <div className="text-center text-muted-foreground py-10">
+      <div className="text-center text-muted-foreground mt-[50%] py-10">
         <p>Aucun sondage disponible pour le moment.</p>
       </div>
     );
@@ -125,7 +129,7 @@ export default function PollList({polls,refreshPolls}:{ polls: Poll[];
                 {/* Edit */}
                 <Tooltip>
                   <TooltipTrigger>
-                    <UpdatePollForm poll={poll}/>
+                    <UpdatePollForm poll={poll} />
                   </TooltipTrigger>
                   <TooltipContent side="bottom">
                     <p>Modifier</p>
@@ -134,9 +138,9 @@ export default function PollList({polls,refreshPolls}:{ polls: Poll[];
               </div>
 
               {/* View Results */}
-              <Button variant="default" size="sm">
+              <Link href={`/polls/${poll.id}`} className="text-primary/90 hover:text-primary/50 ease-in-out duration-200">
                 Voir résultats
-              </Button>
+              </Link>
             </div>
 
             {/* Timestamp */}

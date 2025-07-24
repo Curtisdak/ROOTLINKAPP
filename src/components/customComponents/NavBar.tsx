@@ -5,6 +5,7 @@ import SideBar01 from "./SideBar01";
 import { ThemeToggle } from "./ThemeToggle";
 import { Button } from "@/components/ui/button";
 import { useSession } from "next-auth/react";
+import NotificationBell from "./NotificationBell";
 
 const NavBar = () => {
   const { data: session } = useSession();
@@ -25,11 +26,11 @@ const NavBar = () => {
       {/* Right Icons (Mobile & Desktop) */}
       <div className="flex items-center gap-3">
         <ThemeToggle />
-        {!user?.id && (
+        {!user?.id ? (
           <Link href="/login">
             <Button variant="ghost">Se connecter</Button>
           </Link>
-        )}
+        ) : <NotificationBell /> }
       </div>
     </div>
   );

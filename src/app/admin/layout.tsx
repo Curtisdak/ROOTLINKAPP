@@ -1,34 +1,3 @@
-/*import type { Metadata } from "next";
-import { DynaPuff, Roboto,Jua } from "next/font/google";
-import "./globals.css";
-import { Toaster } from "@/components/ui/sonner";
-import NavBar from "@/components/customComponents/NavBar";
-import { ThemeProvider } from "@/components/customComponents/ThemeProvider";
-import { AuthSessionProvider } from "@/components/customComponents/AuthSessionProvider";
-import PhoneNavBar from "@/components/customComponents/PhoneNavBar";
- import { AffiliateProvider } from "@/context/affiliateContext";
-
-const fontTitle = DynaPuff({
-  weight: "400",
-  variable: "--font-title",
-  subsets: ["latin"],
-});
-
-const fontBody = Roboto({
-  weight: "400",
-  variable: "--font-body",
-  subsets: ["latin"],
-});
-const fontPara = Jua({
-   weight: "400",
-  variable: "--font-para",
-  subsets: ["latin"],
-});
-
-export const metadata: Metadata = {
-  title: "Rootlink-app",
-  description: "La plateforme qui nous permet de partager",
-};*/
 
 import { PollProvider } from "@/context/pollContext";
 
@@ -39,12 +8,11 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body
-        className={""}
-      >
-        <PollProvider>  
-            <div className="pb-[70px] lg:pb-0">{children} </div>
-            </PollProvider>
+      <body className={""}>
+          <PollProvider>
+            <div className="">{children} </div>
+          </PollProvider>
+       
       </body>
     </html>
   );

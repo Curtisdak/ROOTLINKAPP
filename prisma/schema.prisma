@@ -87,6 +87,7 @@ model Notification {
   type      NotificationType
   content   String
   readAt    DateTime?
+  linkId    String? 
   createdAt DateTime         @default(now())
 }
 
@@ -154,4 +155,5 @@ enum NotificationType {
   MESSAGE
   NEWPOLL
   NEWUSER
+  UPDATEDPOLL
 }
